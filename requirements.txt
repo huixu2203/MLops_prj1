@@ -6,6 +6,7 @@ scikit-learn
 catboost
 xgboost
 dill
-pickle5
-pickle
+flask
+# pickle5
+# pickle
 #-e .
