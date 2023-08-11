@@ -6,16 +6,15 @@ import pandas as pd
 from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import OneHotencoder,StandardScaler
+from sklearn.preprocessing import OneHotEncoder,StandardScaler
 
 from src.exception import CustomException
 from src.logger import logging
 from src.utils import save_object
 import os
 
-from src.components.data_transformation import DataTransformation
-from src.components.data_transformation import DataTransformationConfig
-from src.components.data_ingestion import DataIngestion
+
+
 
 
 @dataclass
@@ -45,15 +44,15 @@ class DataTransformation:
             num_pipeline=Pipeline(
                 steps=[
                     ("imputer",SimpleImputer(strategy="median")),
-                    ("scaler",StandardScaler())
+                    ("scaler",StandardScaler(with_mean=False))
 
                 ])
             cat_pipeline=Pipeline(
 
                 steps=[
                     ("imputer",SimpleImputer(strategy="most_frequent")),
-                    ("one_hot_encoder",OneHotencoder()),
-                    ("scaler",StandardScaler())
+                    ("one_hot_encoder",OneHotEncoder()),
+                    ("scaler",StandardScaler(with_mean=False))
 
                 ]
 
@@ -103,6 +102,7 @@ class DataTransformation:
 
             input_feature_train_arr=preprocessing_obj.fit_transform(input_feature_train_df)
             input_feature_test_arr=preprocessing_obj.transform(input_feature_test_df)
+            logging.info(f"Preprocessed input data.")
 
             train_arr = np.c_[
                 input_feature_train_arr, np.array(target_feature_train_df)
@@ -125,12 +125,4 @@ class DataTransformation:
             )
         except Exception as e:
             raise CustomException(e,sys)
-
-if __name__=="__main__":
-    obj=DataIngestion()
-    train_data,test_data=obj.initiate_data_ingestion()
-
-    data_transformation=DataTransformation()
-    data_transformation.initiate_data_transformation(train_data,test_data)
-
 
